@@ -18,6 +18,7 @@ const NavbarContent = ({
   appName,
   activeTab,
   onChangeTab,
+  lastSavedAt,
   logoBase64,
   onPublish,
   onCopyLink,
@@ -58,6 +59,7 @@ const NavbarContent = ({
         {logoBase64 ? <img src={logoBase64} alt="Form logo" className="fc-logo" /> : <div className="fc-logo-fallback">F</div>}
         <div className="fc-brand-copy">
           <strong>{appName}</strong>
+          <small className="fc-save-status">Saved at {lastSavedAt}</small>
         </div>
       </div>
 
@@ -74,17 +76,17 @@ const NavbarContent = ({
       </nav>
 
       <div className="fc-topbar-right">
-        <button className="fc-icon-btn" aria-label="Theme options" onClick={handleThemeSettings}>
+        <button className="fc-icon-btn btn btn-light" aria-label="Theme options" onClick={handleThemeSettings}>
           <FiSliders />
         </button>
-        <button className="fc-icon-btn" aria-label="Refresh view" onClick={() => window.location.reload()}>
+        <button className="fc-icon-btn btn btn-light" aria-label="Refresh view" onClick={() => window.location.reload()}>
           <FiRefreshCw />
         </button>
-        <button className="fc-icon-btn" aria-label="Copy form link" onClick={handleCopyLink}>
+        <button className="fc-icon-btn btn btn-light" aria-label="Copy form link" onClick={handleCopyLink}>
           <FiLink2 />
         </button>
-        <button className="fc-publish-btn" onClick={handlePublish}>Publish</button>
-        <button className="fc-icon-btn" aria-label="More options" onClick={() => addToast('More options menu', 'info')}>
+        <button className="fc-publish-btn btn btn-primary" onClick={handlePublish}>Publish</button>
+        <button className="fc-icon-btn btn btn-light" aria-label="More options" onClick={() => addToast('More options menu', 'info')}>
           <FiMoreVertical />
         </button>
       </div>

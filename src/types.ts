@@ -33,6 +33,7 @@ export interface Question {
   sectionId: string;
   type: QuestionType;
   title: string;
+  placeholder: string;
   description: string;
   required: boolean;
   options: string[];

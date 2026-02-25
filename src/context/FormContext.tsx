@@ -21,7 +21,7 @@ interface FormContextValue {
   updateTheme: (patch: Partial<ThemeSettings>) => void;
   addSection: () => void;
   updateSection: (sectionId: string, patch: Partial<Section>) => void;
-  addQuestion: (type: QuestionType, sectionId?: string) => void;
+  addQuestion: (type: QuestionType, sectionId?: string, index?: number) => void;
   updateQuestion: (questionId: string, patch: Partial<Question>) => void;
   deleteQuestion: (questionId: string) => void;
   duplicateQuestion: (questionId: string) => void;
@@ -62,10 +62,11 @@ const defaultQuestion = (type: QuestionType, sectionId: string): Question => {
     id: createId(),
     sectionId,
     type,
-    title: 'Untitled Question',
+    title: '',
+    placeholder: 'Untitled Question',
     description: '',
     required: false,
-    options: isOptionType ? ['Option 1'] : [],
+    options: isOptionType ? [''] : [],
     allowOther: false,
     validation: { type: 'none' },
     scaleMin: 1,
@@ -139,12 +140,14 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
     }));
   };
 
-  const addQuestion = (type: QuestionType, sectionId?: string) => {
+  const addQuestion = (type: QuestionType, sectionId?: string, index?: number) => {
     const targetSectionId = sectionId ?? formState.sections[0]?.id;
     if (!targetSectionId) return;
+    const newQuestion = defaultQuestion(type, targetSectionId);
+
     setFormState((prev) => ({
       ...prev,
-      questions: [...prev.questions, defaultQuestion(type, targetSectionId)],
+      questions: typeof index === 'number' ? [...prev.questions.slice(0, index), newQuestion, ...prev.questions.slice(index)] : [...prev.questions, newQuestion],
     }));
   };
 
@@ -164,14 +167,17 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
 
   const duplicateQuestion = (questionId: string) => {
     setFormState((prev) => {
-      const target = prev.questions.find((q) => q.id === questionId);
-      if (!target) return prev;
+      const index = prev.questions.findIndex((q) => q.id === questionId);
+      if (index === -1) return prev;
+      const target = prev.questions[index];
       const copy: Question = {
         ...target,
         id: createId(),
-        title: `${target.title} (Copy)`,
+        title: target.title,
       };
-      return { ...prev, questions: [...prev.questions, copy] };
+      const newQuestions = [...prev.questions];
+      newQuestions.splice(index + 1, 0, copy);
+      return { ...prev, questions: newQuestions };
     });
   };
 

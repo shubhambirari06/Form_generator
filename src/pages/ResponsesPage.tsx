@@ -30,7 +30,8 @@ export const ResponsesPage = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'form-responses.csv';
+    const safeTitle = (formState.settings.title.trim() || 'form').replace(/[^\w-]+/g, '_');
+    a.download = `${safeTitle}-responses.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -40,8 +41,8 @@ export const ResponsesPage = () => {
       <ResponseSummary responses={formState.responses} questions={formState.questions} />
       <div className="card">
         <div className="response-actions">
-          <button onClick={exportCSV}>Export CSV</button>
-          <button onClick={clearResponses}>Clear Responses</button>
+          <button className="btn btn-outline-primary btn-sm" onClick={exportCSV}>Export CSV</button>
+          <button className="btn btn-outline-danger btn-sm" onClick={clearResponses}>Clear Responses</button>
         </div>
 
         {formState.responses.length === 0 ? (

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { FiCheck, FiAlertCircle, FiInfo, FiX } from 'react-icons/fi';
 
 export type ToastType = 'success' | 'error' | 'info';

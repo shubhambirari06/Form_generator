@@ -1,5 +1,5 @@
 import './App.css';
-import type { CSSProperties } from 'react';
+import { useEffect, type CSSProperties } from 'react';
 import { FormProvider, useFormContext } from './context/FormContext';
 import { Navbar } from './components/Navbar';
 import { BuilderPage } from './pages/BuilderPage';
@@ -8,6 +8,11 @@ import { PreviewForm } from './components/PreviewForm';
 
 const AppBody = () => {
   const { formState, activeTab, setActiveTab, lastSavedAt, addResponse } = useFormContext();
+  const formTitle = formState.settings.title.trim() || 'Untitled Form';
+
+  useEffect(() => {
+    document.title = formTitle;
+  }, [formTitle]);
 
   return (
     <div
@@ -23,7 +28,7 @@ const AppBody = () => {
       data-bg={formState.theme.backgroundStyle}
     >
       <Navbar
-        appName={formState.settings.appName}
+        appName={formTitle}
         activeTab={activeTab}
         onChangeTab={setActiveTab}
         lastSavedAt={lastSavedAt}

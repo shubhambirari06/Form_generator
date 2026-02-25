@@ -136,21 +136,21 @@ export const PreviewForm = ({
           {q.description ? <small>{q.description}</small> : null}
 
           {q.type === 'text' && (
-            <input value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
+            <input className="form-control" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
           )}
           {q.type === 'paragraph' && (
-            <textarea value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
+            <textarea className="form-control" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
           )}
           {q.type === 'date' && (
-            <input type="date" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
+            <input className="form-control" type="date" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
           )}
           {q.type === 'time' && (
-            <input type="time" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
+            <input className="form-control" type="time" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
           )}
-          {q.type === 'file' && <input type="file" onChange={(e) => setValue(q.id, e.target.files?.[0]?.name ?? '')} />}
+          {q.type === 'file' && <input className="form-control" type="file" onChange={(e) => setValue(q.id, e.target.files?.[0]?.name ?? '')} />}
 
           {q.type === 'select' && (
-            <select value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)}>
+            <select className="form-select" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)}>
               <option value="">Select</option>
               {q.options.map((o) => (
                 <option key={o} value={o}>
@@ -194,21 +194,26 @@ export const PreviewForm = ({
             })}
 
           {q.type === 'linear' && (
-            <div className="scale-line">
+            <div className="d-flex align-items-center gap-3 py-2 overflow-auto">
+              <span className="fw-bold text-muted">{q.scaleMin}</span>
+              <div className="d-flex gap-4">
               {Array.from({ length: q.scaleMax - q.scaleMin + 1 }).map((_, idx) => {
                 const v = q.scaleMin + idx;
                 return (
-                  <label key={`${q.id}-${v}`}>
+                  <label key={`${q.id}-${v}`} className="d-flex flex-column align-items-center gap-1" style={{ cursor: 'pointer' }}>
                     <input
                       type="radio"
                       name={q.id}
+                      className="form-check-input m-0"
                       checked={Number(answers[q.id]) === v}
                       onChange={() => setValue(q.id, v)}
                     />
-                    {v}
+                    <small className="text-muted">{v}</small>
                   </label>
                 );
               })}
+              </div>
+              <span className="fw-bold text-muted">{q.scaleMax}</span>
             </div>
           )}
 
@@ -217,10 +222,14 @@ export const PreviewForm = ({
       ))}
 
       <div className="nav-row">
-        <button onClick={prev} disabled={sectionIndex === 0}>
+        <button className="btn btn-outline-secondary" onClick={prev} disabled={sectionIndex === 0}>
           Previous
         </button>
-        {sectionIndex < sections.length - 1 ? <button onClick={next}>Next</button> : <button onClick={submit}>Submit</button>}
+        {sectionIndex < sections.length - 1 ? (
+          <button className="btn btn-primary" onClick={next}>Next</button>
+        ) : (
+          <button className="btn btn-success" onClick={submit}>Submit</button>
+        )}
       </div>
     </div>
   );
