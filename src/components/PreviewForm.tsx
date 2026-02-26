@@ -108,32 +108,42 @@ export const PreviewForm = ({
 
   if (submitted) {
     return (
-      <div className="card">
-        <h2>Submitted</h2>
-        <p>{confirmationMessage}</p>
+      <div className="card shadow-sm p-5 text-center">
+        <h2 className="mb-3">Submitted</h2>
+        <p className="lead">{confirmationMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="card">
-      <div className="preview-header">
-        {logoBase64 ? <img src={logoBase64} className="fc-logo-large" alt="Form logo" /> : null}
-        <h1>{title}</h1>
-        <p>{description}</p>
+    <div className="card shadow-sm">
+      <div className="preview-header mb-4 p-3 border rounded bg-light bg-opacity-10">
+        {logoBase64 ? <img src={logoBase64} className="fc-logo-large mb-3" alt="Form logo" /> : null}
+        <h1 className="h2 mb-2">{title}</h1>
+        <p className="text-muted lead mb-0">{description}</p>
       </div>
 
-      <div className="section-head">
-        <h3>{currentSection?.title}</h3>
-        <small>{currentSection?.description}</small>
+      <div className="section-head mb-4 px-2">
+        <h3 className="h4 mb-2">{currentSection?.title}</h3>
+        <p className="text-muted mb-0">{currentSection?.description}</p>
       </div>
 
+      <div className="px-2">
       {currentQuestions.map((q) => (
-        <div key={q.id} className="preview-question">
-          <label>
-            {q.title} {q.required ? <span className="required">*</span> : null}
-          </label>
-          {q.description ? <small>{q.description}</small> : null}
+        <div key={q.id} className="preview-question mb-4 p-3 border rounded bg-light bg-opacity-10">
+          {(() => {
+            const filledOptions = q.options
+              .map((o) => o.trim())
+              .filter((o) => o.length > 0);
+
+            return (
+              <>
+          <div className="mb-3">
+            <label className="form-label fw-bold d-block mb-1">
+              {q.title} {q.required ? <span className="required text-danger">*</span> : null}
+            </label>
+            {q.description ? <small className="text-muted d-block">{q.description}</small> : null}
+          </div>
 
           {q.type === 'text' && (
             <input className="form-control" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)} />
@@ -152,7 +162,7 @@ export const PreviewForm = ({
           {q.type === 'select' && (
             <select className="form-select" value={(answers[q.id] as string) ?? ''} onChange={(e) => setValue(q.id, e.target.value)}>
               <option value="">Select</option>
-              {q.options.map((o) => (
+              {filledOptions.map((o) => (
                 <option key={o} value={o}>
                   {o}
                 </option>
@@ -161,37 +171,45 @@ export const PreviewForm = ({
             </select>
           )}
 
-          {q.type === 'radio' &&
-            [...q.options, ...(q.allowOther ? ['Other'] : [])].map((o) => (
-              <label key={`${q.id}-${o}`} className="choice-line">
-                <input
-                  type="radio"
-                  name={q.id}
-                  checked={(answers[q.id] as string) === o}
-                  onChange={() => setValue(q.id, o)}
-                />
-                {o}
-              </label>
-            ))}
-
-          {q.type === 'checkbox' &&
-            [...q.options, ...(q.allowOther ? ['Other'] : [])].map((o) => {
-              const current = (answers[q.id] as string[]) ?? [];
-              const checked = current.includes(o);
-              return (
-                <label key={`${q.id}-${o}`} className="choice-line">
+          {q.type === 'radio' && (
+            <div className="d-flex flex-column gap-2">
+              {[...filledOptions, ...(q.allowOther ? ['Other'] : [])].map((o) => (
+                <label key={`${q.id}-${o}`} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }}>
                   <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={(e) => {
-                      const next = e.target.checked ? [...current, o] : current.filter((x) => x !== o);
-                      setValue(q.id, next);
-                    }}
+                    type="radio"
+                    name={q.id}
+                    className="form-check-input mt-0"
+                    checked={(answers[q.id] as string) === o}
+                    onChange={() => setValue(q.id, o)}
                   />
-                  {o}
+                  <span>{o}</span>
                 </label>
-              );
-            })}
+              ))}
+            </div>
+          )}
+
+          {q.type === 'checkbox' && (
+            <div className="d-flex flex-column gap-2">
+              {[...filledOptions, ...(q.allowOther ? ['Other'] : [])].map((o) => {
+                const current = (answers[q.id] as string[]) ?? [];
+                const checked = current.includes(o);
+                return (
+                  <label key={`${q.id}-${o}`} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      className="form-check-input mt-0"
+                      checked={checked}
+                      onChange={(e) => {
+                        const next = e.target.checked ? [...current, o] : current.filter((x) => x !== o);
+                        setValue(q.id, next);
+                      }}
+                    />
+                    <span>{o}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
 
           {q.type === 'linear' && (
             <div className="d-flex align-items-center gap-3 py-2 overflow-auto">
@@ -217,11 +235,15 @@ export const PreviewForm = ({
             </div>
           )}
 
-          {errors[q.id] ? <p className="error">{errors[q.id]}</p> : null}
+          {errors[q.id] ? <p className="error mt-2">{errors[q.id]}</p> : null}
+              </>
+            );
+          })()}
         </div>
       ))}
+      </div>
 
-      <div className="nav-row">
+      <div className="nav-row px-2">
         <button className="btn btn-outline-secondary" onClick={prev} disabled={sectionIndex === 0}>
           Previous
         </button>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from '../context/FormContext';
 import { QuestionCard } from '../components/QuestionCard';
 import { QuestionTypesPanel } from '../components/QuestionTypesPanel';
+import type { QuestionType } from '../types';
 
 export const BuilderPage = () => {
   const {
@@ -36,7 +37,7 @@ export const BuilderPage = () => {
     prevQuestionsRef.current = allQuestions;
   }, [allQuestions]);
 
-  const handleAddQuestion = (type: any) => {
+  const handleAddQuestion = (type: QuestionType) => {
     const activeIndex = allQuestions.findIndex(q => q.id === activeQuestionId);
     const insertIndex = activeIndex >= 0 ? activeIndex + 1 : allQuestions.length;
     const sectionId = activeIndex >= 0 ? allQuestions[activeIndex].sectionId : formState.sections[0]?.id;

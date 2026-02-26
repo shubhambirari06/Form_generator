@@ -33,7 +33,6 @@ export interface Question {
   sectionId: string;
   type: QuestionType;
   title: string;
-  placeholder: string;
   description: string;
   required: boolean;
   options: string[];
@@ -49,7 +48,7 @@ export interface ThemeSettings {
   secondary: string;
   accent: string;
   background: string;
-  backgroundStyle: 'plain' | 'dots' | 'gradient';
+  backgroundStyle: 'plain' | 'dots' | 'grid' | 'lines' | 'gradient';
   darkMode: boolean;
 }
 

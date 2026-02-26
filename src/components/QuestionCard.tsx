@@ -1,4 +1,4 @@
-import { FiX, FiImage } from 'react-icons/fi';
+import { FiX } from 'react-icons/fi';
 import type { Question, QuestionType, Section, ValidationType } from '../types';
 
 interface QuestionCardProps {
@@ -160,7 +160,7 @@ export const QuestionCard = ({
               {question.type === 'checkbox' && <div style={{ width: 16, height: 16, borderRadius: '2px', border: '2px solid #ccc' }} />}
               {question.type === 'select' && <span className="text-muted small fw-bold" style={{ width: 20 }}>{i + 1}.</span>}
               <input
-                className="form-control"
+                className="form-control border-0 border-bottom rounded-0 px-0"
                 value={opt}
                 placeholder={`Option ${i + 1}`}
                 onChange={(e) => {
@@ -169,14 +169,14 @@ export const QuestionCard = ({
                   onUpdate(question.id, { options: next });
                 }}
               />
-              <a
-                className="text-secondary"
-                style={{ cursor: 'pointer' }}
+              <button
+                type="button"
+                className="btn btn-link btn-sm p-0 text-secondary"
                 aria-label="Remove option"
                 onClick={() => onUpdate(question.id, { options: question.options.filter((_, idx) => idx !== i) })}
               >
                 <FiX />
-              </a>
+              </button>
             </div>
           ))}
           {question.allowOther && (
@@ -184,25 +184,31 @@ export const QuestionCard = ({
                {question.type === 'radio' && <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid #ccc' }} />}
                {question.type === 'checkbox' && <div style={{ width: 16, height: 16, borderRadius: '2px', border: '2px solid #ccc' }} />}
                {question.type === 'select' && <span className="text-muted small fw-bold" style={{ width: 20 }}>{question.options.length + 1}.</span>}
-               <input className="form-control text-muted" disabled value="Other..." style={{ borderStyle: 'dotted' }} />
-               <a className="text-secondary" style={{ cursor: 'pointer' }} onClick={() => onUpdate(question.id, { allowOther: false })}><FiX /></a>
+               <input className="form-control border-0 border-bottom rounded-0 px-0 text-muted" disabled value="Other" />
+               <button type="button" className="btn btn-link btn-sm p-0 text-secondary" onClick={() => onUpdate(question.id, { allowOther: false })}><FiX /></button>
             </div>
           )}
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm mt-2"
-            onClick={() => onUpdate(question.id, { options: [...question.options, ''] })}
-          >
-            + Add option
-          </button>
-          <label className="toggle-line">
-            <input
-              type="checkbox"
-              checked={question.allowOther}
-              onChange={(e) => onUpdate(question.id, { allowOther: e.target.checked })}
-            />
-            Include “Other”
-          </label>
+          <div className="d-flex align-items-center flex-wrap gap-1 mt-2 ps-1">
+            <button
+              type="button"
+              className="btn btn-link btn-sm p-0 text-secondary text-decoration-none"
+              onClick={() => onUpdate(question.id, { options: [...question.options, ''] })}
+            >
+              Add option
+            </button>
+            {!question.allowOther && (
+              <>
+                <span className="text-secondary small">or</span>
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm p-0 text-primary text-decoration-none"
+                  onClick={() => onUpdate(question.id, { allowOther: true })}
+                >
+                  add "Other"
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -257,51 +263,6 @@ export const QuestionCard = ({
                 })
               }
             />
-          )}
-        </div>
-      )}
-
-      {(question.type === 'radio' || question.type === 'select') && (
-        <div className="conditional-box">
-          <label className="toggle-line">
-            <input
-              type="checkbox"
-              checked={question.condition.enabled}
-              onChange={(e) =>
-                onUpdate(question.id, {
-                  condition: { ...question.condition, enabled: e.target.checked },
-                })
-              }
-            />
-            Conditional next section
-          </label>
-          {question.condition.enabled && (
-            <>
-              <input
-                placeholder='If answer equals "..."'
-                value={question.condition.equals}
-                onChange={(e) =>
-                  onUpdate(question.id, {
-                    condition: { ...question.condition, equals: e.target.value },
-                  })
-                }
-              />
-              <select
-                value={question.condition.targetSectionId}
-                onChange={(e) =>
-                  onUpdate(question.id, {
-                    condition: { ...question.condition, targetSectionId: e.target.value },
-                  })
-                }
-              >
-                <option value="">Select section</option>
-                {sections.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.title}
-                  </option>
-                ))}
-              </select>
-            </>
           )}
         </div>
       )}

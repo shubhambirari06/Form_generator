@@ -19,7 +19,3 @@ export const saveFormState = (state: FormState): void => {
     // Ignore storage limits / availability issues
   }
 };
-
-export const clearFormState = (): void => {
-  localStorage.removeItem(STORAGE_KEY);
-};

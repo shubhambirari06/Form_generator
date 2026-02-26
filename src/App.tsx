@@ -1,18 +1,32 @@
 import './App.css';
-import { useEffect, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { FormProvider, useFormContext } from './context/FormContext';
 import { Navbar } from './components/Navbar';
 import { BuilderPage } from './pages/BuilderPage';
-import { ResponsesPage } from './pages/ResponsesPage';
 import { PreviewForm } from './components/PreviewForm';
+import { ThemeSettingsPanel } from './components/ThemeSettingsPanel';
 
 const AppBody = () => {
-  const { formState, activeTab, setActiveTab, lastSavedAt, addResponse } = useFormContext();
+  const { formState, activeTab, setActiveTab, lastSavedAt, addResponse, resetForm, updateTheme } = useFormContext();
+  const [showThemeSettings, setShowThemeSettings] = useState(false);
   const formTitle = formState.settings.title.trim() || 'Untitled Form';
 
   useEffect(() => {
     document.title = formTitle;
   }, [formTitle]);
+
+  useEffect(() => {
+    let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement | null;
+
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      link.type = 'image/svg+xml';
+      document.head.appendChild(link);
+    }
+
+    link.href = formState.settings.logoBase64 || '/favicon.svg';
+  }, [formState.settings.logoBase64]);
 
   return (
     <div
@@ -33,6 +47,8 @@ const AppBody = () => {
         onChangeTab={setActiveTab}
         lastSavedAt={lastSavedAt}
         logoBase64={formState.settings.logoBase64}
+        onReset={resetForm}
+        onThemeSettings={() => setShowThemeSettings(true)}
       />
 
       {activeTab === 'builder' && <BuilderPage />}
@@ -49,7 +65,14 @@ const AppBody = () => {
           />
         </div>
       )}
-      {activeTab === 'responses' && <ResponsesPage />}
+
+      {showThemeSettings && (
+        <ThemeSettingsPanel
+          theme={formState.theme}
+          onUpdate={updateTheme}
+          onClose={() => setShowThemeSettings(false)}
+        />
+      )}
     </div>
   );
 };

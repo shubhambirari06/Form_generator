@@ -10,7 +10,7 @@ import type {
 } from '../types';
 import { loadFormState, saveFormState } from '../utils/localStorageHelper';
 
-type Tab = 'builder' | 'preview' | 'responses';
+type Tab = 'builder' | 'preview';
 
 interface FormContextValue {
   formState: FormState;
@@ -26,18 +26,18 @@ interface FormContextValue {
   deleteQuestion: (questionId: string) => void;
   duplicateQuestion: (questionId: string) => void;
   reorderQuestions: (fromIndex: number, toIndex: number) => void;
-  clearResponses: () => void;
   addResponse: (answers: FormResponse['answers']) => void;
+  resetForm: () => void;
 }
 
 const createId = () =>
   typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 
 const defaultTheme: ThemeSettings = {
-  primary: '#0F766E',
-  secondary: '#0B132B',
-  accent: '#F4A261',
-  background: '#F8FAFC',
+  primary: '#673ab7',
+  secondary: '#202124',
+  accent: '#4285f4',
+  background: '#f0ebf8',
   backgroundStyle: 'plain',
   darkMode: false,
 };
@@ -47,7 +47,7 @@ const defaultSettings: FormSettings = {
   description: 'Describe your form',
   logoBase64: '',
   confirmationMessage: 'Thanks! Your response has been recorded.',
-  appName: 'FormCraft',
+  appName: 'Form Builder',
 };
 
 const createInitialSection = (): Section => ({
@@ -63,7 +63,6 @@ const defaultQuestion = (type: QuestionType, sectionId: string): Question => {
     sectionId,
     type,
     title: '',
-    placeholder: 'Untitled Question',
     description: '',
     required: false,
     options: isOptionType ? [''] : [],
@@ -191,10 +190,6 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const clearResponses = () => {
-    setFormState((prev) => ({ ...prev, responses: [] }));
-  };
-
   const addResponse = (answers: FormResponse['answers']) => {
     const entry: FormResponse = {
       id: createId(),
@@ -202,6 +197,10 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
       answers,
     };
     setFormState((prev) => ({ ...prev, responses: [...prev.responses, entry] }));
+  };
+
+  const resetForm = () => {
+    setFormState(normalizeState(defaultState()));
   };
 
   const value = useMemo<FormContextValue>(
@@ -219,8 +218,8 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
       deleteQuestion,
       duplicateQuestion,
       reorderQuestions,
-      clearResponses,
       addResponse,
+      resetForm,
     }),
     [formState, activeTab, lastSavedAt]
   );
