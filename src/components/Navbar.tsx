@@ -1,13 +1,12 @@
 import { FiLink2, FiRefreshCw } from 'react-icons/fi';
 import { IoColorPalette } from 'react-icons/io5';
 import { ToastProvider, useToast } from './Toast';
-
-type Tab = 'builder' | 'preview';
+import type { AppTab } from '../types';
 
 interface NavbarProps {
   appName: string;
-  activeTab: Tab;
-  onChangeTab: (tab: Tab) => void;
+  activeTab: AppTab;
+  onChangeTab: (tab: AppTab) => void;
   lastSavedAt: string;
   logoBase64?: string;
   onPublish?: () => void;
@@ -79,6 +78,9 @@ const NavbarContent = ({
         </button>
         <button className={activeTab === 'preview' ? 'active' : ''} onClick={() => onChangeTab('preview')}>
           Preview
+        </button>
+        <button className={activeTab === 'responses' ? 'active' : ''} onClick={() => onChangeTab('responses')}>
+          Responses
         </button>
       </nav>
 

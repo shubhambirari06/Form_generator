@@ -1,6 +1,6 @@
 import type { FormState } from '../types';
 
-const STORAGE_KEY = 'formcraft-state-v1';
+export const STORAGE_KEY = 'formcraft-state-v1';
 
 export const loadFormState = (): FormState | null => {
   try {

@@ -60,6 +60,8 @@ export interface FormSettings {
   appName: string;
 }
 
+export type AppTab = 'builder' | 'preview' | 'responses';
+
 export type AnswerValue = string | string[] | number | null;
 
 export interface FormResponse {

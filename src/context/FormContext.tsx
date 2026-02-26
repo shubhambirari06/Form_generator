@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type {
+  AppTab,
   FormResponse,
   FormSettings,
   FormState,
@@ -8,14 +9,12 @@ import type {
   Section,
   ThemeSettings,
 } from '../types';
-import { loadFormState, saveFormState } from '../utils/localStorageHelper';
-
-type Tab = 'builder' | 'preview';
+import { loadFormState, saveFormState, STORAGE_KEY } from '../utils/localStorageHelper';
 
 interface FormContextValue {
   formState: FormState;
-  activeTab: Tab;
-  setActiveTab: (tab: Tab) => void;
+  activeTab: AppTab;
+  setActiveTab: (tab: AppTab) => void;
   lastSavedAt: string;
   updateSettings: (patch: Partial<FormSettings>) => void;
   updateTheme: (patch: Partial<ThemeSettings>) => void;
@@ -107,8 +106,29 @@ const FormContext = createContext<FormContextValue | null>(null);
 
 export const FormProvider = ({ children }: { children: React.ReactNode }) => {
   const [formState, setFormState] = useState<FormState>(() => normalizeState(loadFormState() ?? defaultState()));
-  const [activeTab, setActiveTab] = useState<Tab>('builder');
+  const [activeTab, setActiveTab] = useState<AppTab>('builder');
   const [lastSavedAt, setLastSavedAt] = useState<string>(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY) return;
+
+      if (!event.newValue) {
+        setFormState(normalizeState(defaultState()));
+        return;
+      }
+
+      try {
+        const nextState = JSON.parse(event.newValue) as FormState;
+        setFormState(normalizeState(nextState));
+      } catch {
+        // Ignore malformed storage payloads.
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   useEffect(() => {
     saveFormState(formState);
